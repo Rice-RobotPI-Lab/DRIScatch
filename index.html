@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="Zero-Shot Sim-to-Real Robot Learning: A Dexterous Manipulation Study on Reactive Catching">
+  <meta name="keywords" content="sim-to-real, domain randomization, DRIS, reactive catching, dexterous manipulation, robot learning">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Zero-Shot Sim-to-Real: Reactive Catching with DRIS</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+
+  <style>
+    body {
+      font-family: 'Noto Sans', sans-serif;
+    }
+
+    .link-block a {
+      margin-top: 5px;
+      margin-bottom: 5px;
+    }
+
+    .publication-title {
+      font-family: 'Google Sans', sans-serif;
+    }
+
+    .publication-authors {
+      font-family: 'Google Sans', sans-serif;
+    }
+
+    .publication-authors a {
+      color: hsl(204, 86%, 53%) !important;
+    }
+
+    .publication-authors a:hover {
+      text-decoration: underline;
+    }
+
+    .author-block {
+      display: inline-block;
+    }
+
+    .publication-venue {
+      color: #555;
+      width: fit-content;
+      font-weight: bold;
+    }
+
+    .venue-badge {
+      display: inline-block;
+      background: #e8f0fe;
+      color: #1a73e8;
+      border: 1px solid #c5d6f8;
+      border-radius: 6px;
+      padding: 0.2rem 0.75rem;
+      font-family: 'Google Sans', sans-serif;
+      font-weight: 600;
+      font-size: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    /* Teaser */
+    .teaser .hero-body {
+      padding-top: 0;
+      padding-bottom: 3rem;
+    }
+
+    .teaser {
+      font-family: 'Google Sans', sans-serif;
+    }
+
+    /* Placeholder for media not yet provided */
+    .media-placeholder {
+      background: #f0f0f0;
+      border: 2px dashed #ccc;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      color: #999;
+      font-size: 0.95rem;
+      min-height: 300px;
+    }
+
+    .media-placeholder .placeholder-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      color: #bbb;
+    }
+
+    .media-placeholder.video-ph { min-height: 220px; }
+    .media-placeholder.figure-ph { min-height: 350px; }
+
+    /* Key result highlight */
+    .result-highlight {
+      background: linear-gradient(135deg, #f8f9ff 0%, #eef2ff 100%);
+      border: 1px solid #dde3f5;
+      border-radius: 12px;
+      padding: 1.5rem 2rem;
+      text-align: center;
+    }
+
+    .result-number {
+      font-family: 'Google Sans', sans-serif;
+      font-size: 3rem;
+      font-weight: 700;
+      color: #1a73e8;
+      line-height: 1;
+    }
+
+    .result-label {
+      font-size: 0.9rem;
+      color: #555;
+      margin-top: 0.3rem;
+    }
+
+    /* Video grid */
+    .video-item {
+      text-align: center;
+    }
+
+    .video-item .video-label {
+      font-family: 'Google Sans', sans-serif;
+      font-weight: 600;
+      margin-top: 0.6rem;
+      font-size: 0.95rem;
+    }
+
+    .video-item .video-desc {
+      font-size: 0.85rem;
+      color: #666;
+      margin-top: 0.15rem;
+    }
+
+    /* Responsive video gallery */
+    .responsive-video-gallery {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: center;
+    }
+
+    .responsive-video-gallery .video-item {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+
+    .responsive-video-gallery .video-item video,
+    .responsive-video-gallery .video-item .media-placeholder {
+      width: 100%;
+      border-radius: 10px;
+    }
+
+    @media screen and (max-width: 768px) {
+      .responsive-video-gallery {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 10px;
+        cursor: grab;
+        justify-content: flex-start;
+      }
+      .responsive-video-gallery:active { cursor: grabbing; }
+      .responsive-video-gallery::-webkit-scrollbar { height: 6px; }
+      .responsive-video-gallery::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+      .responsive-video-gallery .video-item {
+        flex: 0 0 75vw;
+        scroll-snap-align: start;
+      }
+    }
+
+    /* Mobile-wide for wide figures */
+    .mobile-wide {
+      overflow-x: visible;
+    }
+
+    .mobile-wide > img,
+    .mobile-wide > video {
+      width: 100%;
+      border-radius: 10px;
+    }
+
+    @media screen and (max-width: 768px) {
+      .mobile-wide {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 6px;
+      }
+      .mobile-wide::-webkit-scrollbar { height: 6px; }
+      .mobile-wide::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+      .mobile-wide > img,
+      .mobile-wide > video {
+        min-width: 140vw;
+        width: 140vw;
+      }
+    }
+
+    /* DRIS concept cards */
+    .concept-card {
+      background: #fff;
+      border: 1px solid #e8e8e8;
+      border-radius: 10px;
+      padding: 0.85rem 1.1rem;
+    }
+
+    .concept-card:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    .concept-card .concept-header {
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .concept-card .concept-name {
+      font-family: 'Google Sans', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+    }
+
+    .concept-card .concept-desc {
+      font-size: 0.92rem;
+      color: #444;
+      line-height: 1.55;
+    }
+
+    /* Footer */
+    .footer .icon-link {
+      font-size: 25px;
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<!-- HERO                                                              -->
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">Zero-Shot Sim-to-Real Robot Learning: A Dexterous Manipulation Study on Reactive Catching</h1>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><a href="https://charlierkj.github.io/">Kejia Ren</a><sup>1</sup>,</span>
+            <span class="author-block"><a href="https://vector-wangel.github.io/">Gaotian Wang</a><sup>1</sup>,</span>
+            <span class="author-block"><a href="https://asmorgan24.github.io/">Andrew S. Morgan</a><sup>2</sup>,</span>
+            <span class="author-block"><a href="https://hangkaiyu.github.io/">Kaiyu Hang</a><sup>1</sup></span>
+          </div>
+
+          <div class="is-size-6 publication-authors" style="margin-top: 0.5rem;">
+            <span class="author-block"><sup>1</sup>Department of Computer Science, Rice University &nbsp;&nbsp;</span>
+            <span class="author-block"><sup>2</sup>Robotics and AI Institute</span>
+          </div>
+
+          <div style="margin-top: 0.75rem;">
+            <span class="venue-badge">RSS 2026</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- Paper PDF -->
+              <span class="link-block">
+                <a href="https://robotpilab.github.io/publication/drsscatch/rss2026.pdf"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                  <span>Paper</span>
+                </a>
+              </span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<!-- TEASER                                                            -->
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <div class="mobile-wide">
+        <video autoplay controls muted loop playsinline
+               onerror="this.parentElement.innerHTML='<div class=\'media-placeholder video-ph\'><span class=\'placeholder-icon\'><i class=\'fas fa-video\'></i></span><span>Demo video (static/videos/demo.mp4)</span></div>'">
+          <source src="static/videos/demo.mp4" type="video/mp4">
+        </video>
+      </div>
+      <h2 class="subtitle has-text-centered" style="margin-top: 1rem;">
+        A 7-DoF robot manipulator equipped with a <b>flat plate</b> catches a ball thrown toward it,
+        purely by reactive motions generated by our learned policy, with no passive mechanical stabilization.
+      </h2>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<!-- ABSTRACT                                                          -->
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Dexterous manipulation is physics-intensive and highly sensitive to modeling errors and perception noise,
+            making sim-to-real transfer prohibitively challenging. Domain randomization (DR) is commonly used to
+            improve the robustness of learned policies for such tasks, but conventional DR randomizes one instance
+            per episode, offering very limited exposure to the variability of real-world dynamics.
+          </p>
+          <p>
+            To this end, we propose <b>Domain-Randomized Instance Set (DRIS)</b>, which represents and propagates
+            a set of randomized instances simultaneously, providing richer approximation of uncertain dynamics and
+            enabling policies to learn actions that account for multiple possible outcomes. Supported by theoretical
+            analysis, we show that DRIS yields more robust policies and alleviates the need for real-world
+            fine-tuning, even with a modest number of instances (e.g., 10).
+          </p>
+          <p>
+            We demonstrate this on a challenging reactive catching task. Unlike traditional catching setups that use
+            end-effectors designed to mechanically stabilize the object (e.g., curved or enclosing surfaces), our
+            system uses a <b>flat plate</b> that offers no passive stabilization, making the task highly sensitive
+            to noise and requiring rapid reactive motions. The learned policies exhibit strong robustness to
+            uncertainties and achieve reliable zero-shot sim-to-real transfer.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<!-- METHOD: DRIS                                                      -->
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Method: Domain-Randomized Instance Set (DRIS)</h2>
+
+    <!-- Full-width pipeline figure -->
+    <div style="margin-top: 1rem; margin-bottom: 0.75rem;">
+      <img src="static/media/pipeline.png" alt="DRIS-based learning pipeline"
+           style="width:100%; border-radius:10px;"
+           onerror="this.parentElement.innerHTML='<div class=\'media-placeholder figure-ph\'><span class=\'placeholder-icon\'><i class=\'fas fa-image\'></i></span><span>Pipeline figure (static/media/pipeline.png)</span></div>'">
+      <p class="has-text-centered" style="margin-top: 0.6rem; font-size: 0.9rem; color: #666;">
+        <b>Step 1:</b> Pre-train the DRIS encoder via autoencoder reconstruction.
+        <b>Step 2:</b> Train a FiLM-conditioned policy via RL using the frozen encoder.
+      </p>
+    </div>
+
+    <!-- Four concept cards in a 2×2 grid -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 1rem;">
+      <div class="concept-card">
+        <div class="concept-header">
+          <div class="concept-name" style="color: #4285F4;">DRIS</div>
+        </div>
+        <div class="concept-desc">
+          Propagates <em>N</em> parallel instances with different physical properties simultaneously;
+          their joint evolution under a shared action informs a single policy update.
+        </div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-header">
+          <div class="concept-name" style="color: #EA4335;">Set Encoder</div>
+        </div>
+        <div class="concept-desc">
+          A point-cloud autoencoder maps the DRIS state to a fixed-dimensional
+          latent <em>z<sub>t</sub></em>, invariant to DRIS size <em>N</em>.
+        </div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-header">
+          <div class="concept-name" style="color: #34A853;">FiLM Policy</div>
+        </div>
+        <div class="concept-desc">
+          Conditions the latent state on the plate's current tilt via feature-wise affine modulation,
+          enabling consistent control across plate orientations.
+        </div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-header">
+          <div class="concept-name" style="color: #FBBC04;">Zero-Shot Transfer</div>
+        </div>
+        <div class="concept-desc">
+          At deployment, the single real-world observation is treated as DRIS of size <em>N</em> = 1 —
+          no real-world fine-tuning needed.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<!-- PROBLEM SETUP                                                     -->
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<section class="section" style="background: #fafafa; padding-top: 2rem; padding-bottom: 2rem;">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Reactive Catching Setup</h2>
+    <div class="mobile-wide" style="margin-bottom: 1rem;">
+      <img src="static/media/setup.png" alt="Reactive catching problem representation"
+           onerror="this.parentElement.innerHTML='<div class=\'media-placeholder figure-ph\'><span class=\'placeholder-icon\'><i class=\'fas fa-image\'></i></span><span>Problem setup figure (static/media/setup.png)</span></div>'">
+    </div>
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <div class="content has-text-justified" style="font-size: 0.95rem;">
+          <p>
+            The robot must intercept an incoming ball and stabilize it on a flat, low-friction plate —
+            no passive mechanical stabilization is provided. A compact <b>motion frame</b> aligned with
+            the ball's incoming direction captures state (relative displacement &amp; velocity) and
+            action (plate translation &amp; tilt). Four physical parameters are randomized in DRIS:
+            ball radius, static friction, dynamic friction, and restitution coefficient.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<!-- SIMULATION RESULTS                                                -->
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Simulation Results</h2>
+    <div class="content has-text-justified" style="max-width: 800px; margin: 0 auto 1.5rem;">
+      <p>
+        We compare DRIS (N = 1, 10, 50, 200) against an end-to-end (E2E) RL baseline under
+        three sources of uncertainty: observation noise, execution error, and out-of-distribution physics.
+      </p>
+    </div>
+
+    <!-- Observation noise -->
+    <h3 class="title is-4 has-text-centered" style="margin-bottom: 0.5rem;">Observation Noise</h3>
+    <div class="mobile-wide" style="margin-bottom: 0.5rem;">
+      <img src="static/media/obs_noise.png" alt="Reward and success rate under observation noise"
+           onerror="this.parentElement.innerHTML='<div class=\'media-placeholder figure-ph\'><span class=\'placeholder-icon\'><i class=\'fas fa-image\'></i></span><span>Observation noise results (static/media/obs_noise.png)</span></div>'">
+    </div>
+    <p class="has-text-centered" style="font-size: 0.9rem; color: #666; margin-bottom: 2rem;">
+      Training curves and final performance under increasing Gaussian observation noise (σ to 4σ).
+      DRIS with N ≥ 10 maintains substantially higher success rates as noise increases.
+    </p>
+
+    <!-- Execution error & OOD physics side by side -->
+    <div class="columns is-centered">
+      <div class="column is-half">
+        <h3 class="title is-5 has-text-centered">Execution Error</h3>
+        <img src="static/media/exec_error.png" alt="Execution error results"
+             style="width:100%; border-radius:10px;"
+             onerror="this.parentElement.innerHTML='<div class=\'media-placeholder figure-ph\'><span class=\'placeholder-icon\'><i class=\'fas fa-image\'></i></span><span>Execution error figure (static/media/exec_error.png)</span></div>'">
+        <p class="has-text-centered" style="font-size: 0.85rem; color: #666; margin-top: 0.5rem;">
+          DRIS outperforms E2E under joint position perturbations of ±0.05 rad.
+        </p>
+      </div>
+      <div class="column is-half">
+        <h3 class="title is-5 has-text-centered">Out-of-Distribution Physics</h3>
+        <img src="static/media/ood_physics.png" alt="OOD physics results"
+             style="width:100%; border-radius:10px;"
+             onerror="this.parentElement.innerHTML='<div class=\'media-placeholder figure-ph\'><span class=\'placeholder-icon\'><i class=\'fas fa-image\'></i></span><span>OOD physics figure (static/media/ood_physics.png)</span></div>'">
+        <p class="has-text-centered" style="font-size: 0.85rem; color: #666; margin-top: 0.5rem;">
+          DRIS generalizes to balls with unseen restitution values [0.7, 0.8] (trained on [0.4, 0.7]).
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<!-- REAL-ROBOT DEPLOYMENT                                             -->
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<section class="section" style="background: #fafafa; padding-top: 2rem; padding-bottom: 2rem;">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Real-Robot Deployment</h2>
+    <div class="content has-text-justified" style="max-width: 800px; margin: 0 auto 1.5rem;">
+      <p>
+        Policies trained purely in simulation are deployed <b>zero-shot</b> on a 7-DoF
+        Franka Research 3 robot. We test across four ball types (wiffle, rubber, ping-pong, foam)
+        and three ramp speeds (R = 0.13, 0.20, 0.32 m), for 60 trials per policy.
+        Ball 3D state is estimated at 80 FPS using two cameras and parabolic curve fitting.
+      </p>
+    </div>
+
+    <!-- Real-robot deployment video -->
+    <div class="mobile-wide" style="margin-bottom: 1.5rem;">
+      <video autoplay controls muted loop playsinline style="width:100%; border-radius:10px;">
+        <source src="static/videos/real_robot.mp4" type="video/mp4">
+      </video>
+    </div>
+
+    <!-- Quantitative result: three highlight numbers -->
+    <div class="columns is-centered" style="margin-bottom: 2rem;">
+      <div class="column is-one-third">
+        <div class="result-highlight">
+          <div class="result-number" style="color:#e53935;">5%</div>
+          <div class="result-label">VelTrack (hand-crafted)</div>
+        </div>
+      </div>
+      <div class="column is-one-third">
+        <div class="result-highlight">
+          <div class="result-number" style="color:#e53935;">13%</div>
+          <div class="result-label">E2E baseline</div>
+        </div>
+      </div>
+      <div class="column is-one-third">
+        <div class="result-highlight">
+          <div class="result-number">68%</div>
+          <div class="result-label">DRIS (Ours) — zero-shot</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Catching videos: ramp throws -->
+    <h3 class="title is-4 has-text-centered">Catching from Ramp</h3>
+    <div style="display: flex; gap: 1.5rem; align-items: flex-end; margin-bottom: 1rem;">
+      <div style="flex: 1; text-align: center;">
+        <img src="static/media/ramp.png" alt="3 different ramps" style="width:100%; height:220px; object-fit:contain; border-radius:10px; display:block;">
+        <p style="margin-top: 0.5rem; font-family: 'Google Sans', sans-serif; font-size: 1.05rem; font-weight: 600;">3 different ramps</p>
+      </div>
+      <div style="flex: 1; text-align: center;">
+        <img src="static/media/balls.png" alt="4 different balls" style="width:100%; height:220px; object-fit:contain; border-radius:10px; display:block;">
+        <p style="margin-top: 0.5rem; font-family: 'Google Sans', sans-serif; font-size: 1.05rem; font-weight: 600;">4 different balls</p>
+      </div>
+    </div>
+    <div class="video-item" style="margin-bottom: 1.5rem;">
+      <div class="mobile-wide">
+        <video autoplay controls muted loop playsinline style="width:100%; border-radius:10px;">
+          <source src="static/videos/ramp_catch.mp4" type="video/mp4">
+        </video>
+      </div>
+    </div>
+    <!-- Success rate table moved here -->
+    <div class="table-container" style="margin: 0 auto 2rem;">
+      <table class="table is-bordered is-striped is-narrow is-fullwidth results-table" style="font-size: 0.9rem; text-align: center; width: 100%;">
+        <thead>
+          <tr>
+            <th style="text-align: center;">Ball</th>
+            <th style="text-align: center; border-right: 3px solid #363636;">Ramp (R)</th>
+            <th style="text-align: center;">VelTrack</th>
+            <th style="text-align: center;">E2E</th>
+            <th style="text-align: center;"><b>DRIS (Ours)</b></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td rowspan="3">Wiffle</td><td style="border-right: 3px solid #363636;">0.13 m</td><td>0/5</td><td>0/5</td><td><b>5/5</b></td></tr>
+          <tr><td style="border-right: 3px solid #363636;">0.20 m</td><td>0/5</td><td>2/5</td><td><b>4/5</b></td></tr>
+          <tr><td style="border-right: 3px solid #363636;">0.32 m</td><td>0/5</td><td>0/5</td><td><b>3/5</b></td></tr>
+          <tr><td rowspan="3">Rubber</td><td style="border-right: 3px solid #363636;">0.13 m</td><td>0/5</td><td>0/5</td><td><b>2/5</b></td></tr>
+          <tr><td style="border-right: 3px solid #363636;">0.20 m</td><td>0/5</td><td>0/5</td><td><b>5/5</b></td></tr>
+          <tr><td style="border-right: 3px solid #363636;">0.32 m</td><td>0/5</td><td>1/5</td><td><b>2/5</b></td></tr>
+          <tr><td rowspan="3">Ping-Pong</td><td style="border-right: 3px solid #363636;">0.13 m</td><td>0/5</td><td>1/5</td><td><b>4/5</b></td></tr>
+          <tr><td style="border-right: 3px solid #363636;">0.20 m</td><td>2/5</td><td>1/5</td><td><b>5/5</b></td></tr>
+          <tr><td style="border-right: 3px solid #363636;">0.32 m</td><td>0/5</td><td>0/5</td><td><b>4/5</b></td></tr>
+          <tr><td rowspan="3">Foam</td><td style="border-right: 3px solid #363636;">0.13 m</td><td>0/5</td><td>0/5</td><td><b>2/5</b></td></tr>
+          <tr><td style="border-right: 3px solid #363636;">0.20 m</td><td>1/5</td><td>1/5</td><td><b>3/5</b></td></tr>
+          <tr><td style="border-right: 3px solid #363636;">0.32 m</td><td>0/5</td><td>2/5</td><td><b>2/5</b></td></tr>
+          <tr style="border-top: 3px solid #363636;">
+            <td colspan="2" style="border-right: 3px solid #363636;"><b>Total</b></td>
+            <td>3/60</td>
+            <td>8/60</td>
+            <td><b>41/60</b></td>
+          </tr>
+          <tr>
+            <td colspan="2" style="border-right: 3px solid #363636;"><b>Success Rate</b></td>
+            <td>0.05</td>
+            <td>0.13</td>
+            <td><b>0.68</b></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Qualitative: human throw, balancing, irregular objects -->
+    <h3 class="title is-4 has-text-centered">Qualitative Generalization</h3>
+    <div style="display:flex; align-items:center; gap:1.5rem; margin-bottom:1rem;">
+      <video autoplay controls muted loop playsinline style="flex:1; min-width:0; border-radius:10px;">
+        <source src="static/videos/human_throw.mp4" type="video/mp4">
+      </video>
+      <div style="flex:0 0 180px; text-align:center;">
+        <div class="video-label"><b>Human Throw:</b></div>
+        <div class="video-desc">Catches all test balls thrown by a human</div>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:1.5rem; margin-bottom:1rem;">
+      <div style="flex:0 0 180px; text-align:center;">
+        <div class="video-label"><b>Balancing:</b></div>
+        <div class="video-desc">Generalizes to pure balancing without retraining</div>
+      </div>
+      <video autoplay controls muted loop playsinline style="flex:1; min-width:0; border-radius:10px;">
+        <source src="static/videos/balancing.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div style="display:flex; align-items:center; gap:1.5rem; margin-bottom:1rem;">
+      <video autoplay controls muted loop playsinline style="flex:1; min-width:0; border-radius:10px;">
+        <source src="static/videos/irregular.mp4" type="video/mp4">
+      </video>
+      <div style="flex:0 0 180px; text-align:center;">
+        <div class="video-label"><b>Irregular Objects:</b></div>
+        <div class="video-desc">Toy apple, strawberry, and wooden cube</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<!-- FOOTER                                                            -->
+<!-- ══════════════════════════════════════════════════════════════════ -->
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <a class="icon-link" href="#">
+        <i class="fab fa-github"></i>
+      </a>
+    </div>
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content has-text-centered" style="font-size: 0.9rem; color: #666;">
+          <p>
+            This website is licensed under a
+            <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+            It borrows the source code of the <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a> project page.
+          </p>
+          <p>
+            This work is supported by the U.S. National Science Foundation (NSF) under grant FRR-2240040.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+document.querySelectorAll('.responsive-video-gallery').forEach(function(row) {
+  var isDown = false, startX, scrollLeft;
+  row.addEventListener('mousedown', function(e) {
+    isDown = true; startX = e.pageX - row.offsetLeft; scrollLeft = row.scrollLeft;
+  });
+  row.addEventListener('mouseleave', function() { isDown = false; });
+  row.addEventListener('mouseup', function() { isDown = false; });
+  row.addEventListener('mousemove', function(e) {
+    if (!isDown) return;
+    e.preventDefault();
+    row.scrollLeft = scrollLeft - (e.pageX - row.offsetLeft - startX);
+  });
+});
+</script>
+</body>
+</html>
